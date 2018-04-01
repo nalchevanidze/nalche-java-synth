@@ -8,41 +8,32 @@ import javax.sound.sampled.SourceDataLine;
 public class SoundProcessor
 {
 
-	private String threadName;
-	private final AudioFormat _audioFormat;
 	private SourceDataLine _dataLine;
-	// audio Quality
-	protected int _quality = 16;
-	// count of Samples(Elements) per second in Buffer(Array)
-	protected int _sampleRate =    8 * 1024;
+	private int _sampleRate =    8 * 1024;
 	private double _waveIndex = 0;
-	// frequency of signal
-	private float _frequancy = 100;
-	// difference of sinus index per sample
 	private double _stepSize;
-	public boolean isPlaying = false;
+	private boolean isPlaying = false;
 	private byte[] _buffer;
 	
 	public SoundProcessor()
 	{
-		threadName = "processor";
-		_audioFormat = new AudioFormat(_sampleRate, _quality , 1, true, false);
+		AudioFormat audioFormat = new AudioFormat(_sampleRate, 16 , 1, true, false);
 		_buffer = new byte[_sampleRate];
 		try {
-			_dataLine = AudioSystem.getSourceDataLine(_audioFormat);
-			_dataLine.open(_audioFormat, _sampleRate);
+			_dataLine = AudioSystem.getSourceDataLine(audioFormat);
+			_dataLine.open(audioFormat, _sampleRate);
 			_dataLine.start();
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	float noteToFrequency(int index) {
+	private float noteToFrequency(int index) {
 		float power = ((float) index - 49) / 12;
 		return (float) Math.pow(2, power) * 440;
 	}
 
-	byte singleWave() {
+	private byte singleWave() {
 		if (!isPlaying) return (byte) 0;
 		_waveIndex = (_waveIndex + _stepSize) % 1;
 		return (byte) (Wave.mixed(_waveIndex) * 125f);
@@ -60,8 +51,8 @@ public class SoundProcessor
 	}
 
 	public void play(int index) {
-		_frequancy = noteToFrequency(index - 12);
-		_stepSize = _frequancy / _sampleRate;
+		float frequency = noteToFrequency(index - 12);
+		_stepSize = frequency / _sampleRate;
 		isPlaying = true;
 	}
 

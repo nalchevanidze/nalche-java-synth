@@ -1,19 +1,43 @@
-import panel.SynthFrame;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import panel.Keyboard;
 import sound.SoundProcessor;
+import  javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Main {
-
+public class Main extends Application{
 
     public static void main(String[] args){
+        launch(args);
+    }
+    public void start(Stage primaryStage) throws Exception {
 
-        SoundProcessor sound = new SoundProcessor();
-        SynthFrame panel = new SynthFrame();
-        panel.setSoundProcessor(sound);
+        primaryStage.setTitle("Synthesizer");
+        StackPane layout = new StackPane();
+        final Keyboard can = new Keyboard();
+        can.paint();
+        layout.getChildren().add(can);
+
+        Scene scene = new Scene(layout,200,300);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        final SoundProcessor sound = new SoundProcessor();
+
+        can.setOnMousePressed( (MouseEvent event) -> {
+            can.updateState(10);
+            sound.play(10);
+        });
+
+        can.setOnMouseReleased( (MouseEvent event) -> {
+            can.updateState(-1);
+            sound.stop();
+        });
+
         SoundRunner soundRunner = new SoundRunner(sound);
-        soundRunner.start();
+       soundRunner.start();
 
     }
-
-
 }
 
