@@ -6,12 +6,10 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import panel.Keyboard;
-import sound.SoundProcessor;
 import panel.Note;
-
+import sound.SoundProcessor;
 
 public class Main extends Application {
-
     private boolean _isLive = true;
 
     public static void main(String[] args) {
@@ -35,41 +33,44 @@ public class Main extends Application {
         Note notes = new Note();
 
         can.setOnMousePressed((MouseEvent event) -> {
-            int note = (int)(event.getSceneX()/30) + 1;
-            can.updateState(note);
-            sound.play(note);
+            notes.onClick(event);
+            can.updateState(notes.notes);
+            sound.play(notes.active[0]);
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
-            can.updateState(-1);
+            notes.onRelease(event);
+            can.updateState(notes.notes);
             sound.stop();
         });
 
-        primaryStage.setOnCloseRequest((WindowEvent event)-> {
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
             _isLive = false;
         });
 
-        scene.setOnKeyPressed( (KeyEvent event)-> {
-            int note = notes.get(event);
-            can.updateState(note);
-            sound.play(note);
+        scene.setOnKeyPressed((KeyEvent event) -> {
+            notes.keyPress(event);
+            int note = notes.noteFromKeyEvent(event);
+            can.updateState(notes.notes);
+            sound.play(notes.active[0]);
         });
 
-        scene.setOnKeyReleased( (KeyEvent event)-> {
-            can.updateState(-1);
+        scene.setOnKeyReleased((KeyEvent event) -> {
+            notes.keyRelease(event);
+            can.updateState(notes.notes);
             sound.stop();
         });
-        
-        Thread soundRunner = new Thread(()->{
-                try {
-                    while (_isLive) {
-                        sound.next();
-                        Thread.sleep(4);
-                    }
-                    sound.terminate();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+        Thread soundRunner = new Thread(() -> {
+            try {
+                while (_isLive) {
+                    sound.next();
+                    Thread.sleep(4);
                 }
+                sound.terminate();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         });
         soundRunner.start();
     }

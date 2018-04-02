@@ -19,7 +19,7 @@ public class SoundProcessor {
     public SoundProcessor() {
         AudioFormat audioFormat = new AudioFormat(_sampleRate, 32, 1, true, false);
         _buffer = new byte[_sampleRate];
-        Thread initThread = new Thread(()->{
+        Thread initThread = new Thread(() -> {
             try {
                 _dataLine = AudioSystem.getSourceDataLine(audioFormat);
                 _dataLine.open(audioFormat, _sampleRate);
@@ -45,20 +45,21 @@ public class SoundProcessor {
     public void next() {
         if (isPlaying) {
             int processSize = 250;
-            for (int i = 0; i < processSize; i++){
+            for (int i = 0; i < processSize; i++) {
                 _processingIndex++;
                 _buffer[_processingIndex] = singleWave();
-                if(_processingIndex>= _sampleRate - 1){
+                if (_processingIndex >= _sampleRate - 1) {
                     _dataLine.write(_buffer, 0, _sampleRate);
                     _processingIndex = 0;
                 }
             }
-        }else if(_dataLine != null){
-           _dataLine.drain();
+        } else if (_dataLine != null) {
+            _dataLine.drain();
         }
     }
 
     public void play(int index) {
+
         float frequency = noteToFrequency(index - 12);
         _stepSize = frequency / _sampleRate;
         isPlaying = true;

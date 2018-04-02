@@ -4,11 +4,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.HashSet;
+import java.util.Set;
 
 public class Keyboard extends Canvas {
     GraphicsContext _gc;
     private int _height;
-    private int _active;
+    private Set _active = new HashSet<Integer>();
 
 
     public Keyboard() {
@@ -20,16 +22,18 @@ public class Keyboard extends Canvas {
 
     }
 
-    public void updateState(int note) {
-        _active = note;
+    public void updateState(Set notes) {
+        _active = notes;
         paint();
     }
+
 
     public void paint() {
         _gc.setFill(Color.GRAY);
         _gc.fillRect(0, 0, 720, 185);
         for (int i = 0; i <= 24; i++) {
-            int h = _active == (i + 1) ? (_height - 20) : _height;
+            int h = _active.contains(i) ? (_height - 20) : _height;
+
             int keyId = (i + 1) % 12;
             switch (keyId) {
                 case 2:
