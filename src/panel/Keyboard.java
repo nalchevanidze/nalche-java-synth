@@ -32,7 +32,7 @@ public class Keyboard extends Canvas {
         _gc.setFill(Color.GRAY);
         _gc.fillRect(0, 0, 720, 185);
         for (int i = 0; i <= 24; i++) {
-            int h = _active.contains(i) ? (_height - 20) : _height;
+            int h = _active.contains(i +1) ? (_height - 20) : _height;
 
             int keyId = (i + 1) % 12;
             switch (keyId) {

@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class Note {
 
-    public Set notes = new HashSet();
+    public Set<Integer> notes = new HashSet<>();
     public int[] active = new int[0];
 
     public void onClick(MouseEvent event) {
@@ -24,20 +24,22 @@ public class Note {
     }
 
     public void keyPress(KeyEvent event) {
-        notes.add(noteFromKeyEvent(event));
+        int note = noteFromKeyEvent(event);
+        notes.add(note);
         updateActiveNotes();
     }
 
     public void keyRelease(KeyEvent event) {
-        notes.remove(noteFromKeyEvent(event));
+        int note = noteFromKeyEvent(event);
+        notes.remove(note);
         updateActiveNotes();
     }
 
-    public void updateActiveNotes() {
+    private void updateActiveNotes() {
         active = notes.stream().mapToInt(i -> (int) i).toArray();
     }
 
-    public int noteFromKeyEvent(KeyEvent event) {
+    private int noteFromKeyEvent(KeyEvent event) {
         char key = event.getCode().getName().toLowerCase().charAt(0);
 
         switch (key) {

@@ -35,7 +35,7 @@ public class Main extends Application {
         can.setOnMousePressed((MouseEvent event) -> {
             notes.onClick(event);
             can.updateState(notes.notes);
-            sound.play(notes.active[0]);
+            sound.play(notes.active);
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
@@ -50,9 +50,8 @@ public class Main extends Application {
 
         scene.setOnKeyPressed((KeyEvent event) -> {
             notes.keyPress(event);
-            int note = notes.noteFromKeyEvent(event);
             can.updateState(notes.notes);
-            sound.play(notes.active[0]);
+            sound.play(notes.active);
         });
 
         scene.setOnKeyReleased((KeyEvent event) -> {
@@ -65,7 +64,7 @@ public class Main extends Application {
             try {
                 while (_isLive) {
                     sound.next();
-                    Thread.sleep(4);
+                    Thread.sleep(2);
                 }
                 sound.terminate();
             } catch (InterruptedException e) {

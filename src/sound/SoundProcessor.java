@@ -5,16 +5,23 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+class SoundEvent {
+    double state = 0;
+    double stepSize = 1;
+    SoundEvent(double step_size){
+        stepSize = step_size;
+    }
+}
+
 
 public class SoundProcessor {
 
     private SourceDataLine _dataLine;
     private int _sampleRate = 8 * 1024;
-    private double _waveIndex = 0;
-    private double _stepSize;
     private boolean isPlaying = false;
     private byte[] _buffer;
     private int _processingIndex = 0;
+    private SoundEvent[] _events = new SoundEvent[1];
 
     public SoundProcessor() {
         AudioFormat audioFormat = new AudioFormat(_sampleRate, 32, 1, true, false);
@@ -37,9 +44,15 @@ public class SoundProcessor {
     }
 
     private byte singleWave() {
-        if (!isPlaying) return (byte) 0;
-        _waveIndex = (_waveIndex + _stepSize) % 1;
-        return (byte) (Wave.saw(_waveIndex) * 125f);
+        if (!isPlaying || _events[0] == null) return (byte) 0;
+        double value = 0;
+        for( SoundEvent e :_events){
+            e.state = (e.state + e.stepSize) % 1;
+            value += (Wave.saw(e.state) * 125f);
+        }
+        value = value / (_events.length +2);
+        return (byte) value;
+
     }
 
     public void next() {
@@ -58,14 +71,18 @@ public class SoundProcessor {
         }
     }
 
-    public void play(int index) {
-
-        float frequency = noteToFrequency(index - 12);
-        _stepSize = frequency / _sampleRate;
+    public void play(int[] indexes) {
+        _events = new SoundEvent[indexes.length];
+        for(int i = 0; i < indexes.length; i++){
+            float frequency = noteToFrequency(indexes[i] - 12);
+            _events[i] = new SoundEvent(frequency / _sampleRate);
+        }
         isPlaying = true;
+
     }
 
     public void stop() {
+        _events = new SoundEvent[0];
         isPlaying = false;
     }
 
