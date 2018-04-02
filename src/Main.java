@@ -1,11 +1,14 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import panel.Keyboard;
 import sound.SoundProcessor;
+import panel.Note;
+
 
 public class Main extends Application {
 
@@ -29,9 +32,12 @@ public class Main extends Application {
 
         final SoundProcessor sound = new SoundProcessor();
 
+        Note notes = new Note();
+
         can.setOnMousePressed((MouseEvent event) -> {
-            can.updateState(10);
-            sound.play(10);
+            int note = (int)(event.getSceneX()/30) + 1;
+            can.updateState(note);
+            sound.play(note);
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
@@ -43,6 +49,17 @@ public class Main extends Application {
             _isLive = false;
         });
 
+        scene.setOnKeyPressed( (KeyEvent event)-> {
+            int note = notes.get(event);
+            can.updateState(note);
+            sound.play(note);
+        });
+
+        scene.setOnKeyReleased( (KeyEvent event)-> {
+            can.updateState(-1);
+            sound.stop();
+        });
+        
         Thread soundRunner = new Thread(()->{
                 try {
                     while (_isLive) {
