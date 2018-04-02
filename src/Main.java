@@ -64,7 +64,7 @@ public class Main extends Application {
                 try {
                     while (_isLive) {
                         sound.next();
-                        Thread.sleep(120);
+                        Thread.sleep(4);
                     }
                     sound.terminate();
                 } catch (InterruptedException e) {

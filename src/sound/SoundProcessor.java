@@ -14,6 +14,7 @@ public class SoundProcessor {
     private double _stepSize;
     private boolean isPlaying = false;
     private byte[] _buffer;
+    private int _processingIndex = 0;
 
     public SoundProcessor() {
         AudioFormat audioFormat = new AudioFormat(_sampleRate, 32, 1, true, false);
@@ -38,15 +39,20 @@ public class SoundProcessor {
     private byte singleWave() {
         if (!isPlaying) return (byte) 0;
         _waveIndex = (_waveIndex + _stepSize) % 1;
-        return (byte) (Wave.sine(_waveIndex) * 125f);
+        return (byte) (Wave.saw(_waveIndex) * 125f);
     }
 
     public void next() {
         if (isPlaying) {
-            for (int i = 0; i < _sampleRate; i++) {
-                _buffer[i] = singleWave();
+            int processSize = 250;
+            for (int i = 0; i < processSize; i++){
+                _processingIndex++;
+                _buffer[_processingIndex] = singleWave();
+                if(_processingIndex>= _sampleRate - 1){
+                    _dataLine.write(_buffer, 0, _sampleRate);
+                    _processingIndex = 0;
+                }
             }
-            _dataLine.write(_buffer, 0, _sampleRate);
         }else if(_dataLine != null){
            _dataLine.drain();
         }
