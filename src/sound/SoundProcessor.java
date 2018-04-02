@@ -16,15 +16,18 @@ public class SoundProcessor {
     private byte[] _buffer;
 
     public SoundProcessor() {
-        AudioFormat audioFormat = new AudioFormat(_sampleRate, 16, 1, true, false);
+        AudioFormat audioFormat = new AudioFormat(_sampleRate, 32, 1, true, false);
         _buffer = new byte[_sampleRate];
-        try {
-            _dataLine = AudioSystem.getSourceDataLine(audioFormat);
-            _dataLine.open(audioFormat, _sampleRate);
-            _dataLine.start();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
+        Thread initThread = new Thread(()->{
+            try {
+                _dataLine = AudioSystem.getSourceDataLine(audioFormat);
+                _dataLine.open(audioFormat, _sampleRate);
+                _dataLine.start();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+        });
+        initThread.start();
     }
 
     private float noteToFrequency(int index) {
@@ -35,7 +38,7 @@ public class SoundProcessor {
     private byte singleWave() {
         if (!isPlaying) return (byte) 0;
         _waveIndex = (_waveIndex + _stepSize) % 1;
-        return (byte) (Wave.mixed(_waveIndex) * 125f);
+        return (byte) (Wave.sine(_waveIndex) * 125f);
     }
 
     public void next() {
@@ -44,8 +47,8 @@ public class SoundProcessor {
                 _buffer[i] = singleWave();
             }
             _dataLine.write(_buffer, 0, _sampleRate);
-        } else {
-            _dataLine.drain();
+        }else if(_dataLine != null){
+           _dataLine.drain();
         }
     }
 
@@ -57,11 +60,12 @@ public class SoundProcessor {
 
     public void stop() {
         isPlaying = false;
-        _dataLine.drain();
     }
 
     public void terminate() {
+        _dataLine.drain();
         _dataLine.close();
+
     }
 
 }
