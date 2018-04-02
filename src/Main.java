@@ -36,9 +36,17 @@ public class Main extends Application {
             sound.stop();
         });
 
-        SoundRunner soundRunner = new SoundRunner(sound);
+        Thread soundRunner = new Thread(()->{
+                try {
+                    while (true) {
+                        sound.next();
+                        Thread.sleep(120);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+        });
         soundRunner.start();
-
     }
 }
 
