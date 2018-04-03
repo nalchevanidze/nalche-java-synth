@@ -11,10 +11,16 @@ public class Note {
     public Set<Integer> notes = new HashSet<>();
     public int[] active = new int[0];
 
+    public void push(int note){
+        if(!notes.contains(note)){
+            notes.add(note);
+            updateActiveNotes();
+        }
+    }
+
     public void onClick(MouseEvent event) {
         int note = (int) (event.getSceneX() / 30) + 1;
-        notes.add(note);
-        updateActiveNotes();
+        push(note);
     }
 
     public void onRelease(MouseEvent event) {
@@ -25,8 +31,7 @@ public class Note {
 
     public void keyPress(KeyEvent event) {
         int note = noteFromKeyEvent(event);
-        notes.add(note);
-        updateActiveNotes();
+        push(note);
     }
 
     public void keyRelease(KeyEvent event) {
