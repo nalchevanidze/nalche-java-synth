@@ -31,10 +31,21 @@ public class Main extends Application {
         Note notes = new Note();
 
         can.setOnMousePressed((MouseEvent event) -> {
-            notes.onClick(event);
-            can.updateState(notes.notes);
             int note = (int) (event.getSceneX() / 30) + 1;
-            new SoundProcessor(note);
+            if(!notes.notes.contains(note)) {
+                notes.onClick(event);
+                can.updateState(notes.notes);
+                new SoundProcessor(note);
+            }
+        });
+
+        scene.setOnKeyPressed((KeyEvent event) -> {
+            int note = notes.noteFromKeyEvent(event);
+            if(!notes.notes.contains(note)) {
+                notes.keyPress(event);
+                can.updateState(notes.notes);
+                new SoundProcessor(note);
+            }
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
@@ -42,20 +53,13 @@ public class Main extends Application {
             can.updateState(notes.notes);
         });
 
-        primaryStage.setOnCloseRequest((WindowEvent event) -> {
-            _isLive = false;
-        });
-
-        scene.setOnKeyPressed((KeyEvent event) -> {
-            notes.keyPress(event);
-            can.updateState(notes.notes);
-            int n = notes.noteFromKeyEvent(event);
-            new SoundProcessor(n);
-        });
-
         scene.setOnKeyReleased((KeyEvent event) -> {
             notes.keyRelease(event);
             can.updateState(notes.notes);
+        });
+
+        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+            _isLive = false;
         });
     }
 }

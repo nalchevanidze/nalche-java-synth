@@ -7,6 +7,7 @@ import javax.sound.sampled.SourceDataLine;
 
 class Sample {
     public static int rate = 8 * 1024;
+    public static int quality = 32;
 }
 
 class VolumeEnvelope {
@@ -21,7 +22,7 @@ class VolumeEnvelope {
         if(state < 0){
             state = 0;
         }
-        return (float) Math.pow((double)state,2.0);
+        return (float) state;
     }
 }
 
@@ -29,7 +30,7 @@ class VolumeEnvelope {
 class SoundEvent {
     double state = 0;
     double stepSize = 1;
-    VolumeEnvelope volume  = new VolumeEnvelope(3);
+    VolumeEnvelope volume  = new VolumeEnvelope(1.4f);
     boolean finished = false;
 
     SoundEvent(int note){
@@ -50,7 +51,7 @@ class SoundEvent {
             return 0;
         }
 
-        return (float)(Wave.saw(state) * 125f * v);
+        return (float)(Wave.sine(state) * v * 60f );
     }
 
 
@@ -62,31 +63,34 @@ public class SoundProcessor {
     public boolean isPlaying = true;
     private SourceDataLine _dataLine;
     private byte[] _buffer;
-    private SoundEvent se;
+    private SoundEvent _soundEvent;
 
     public SoundProcessor(int i) {
-        se = new SoundEvent( i + 12);
-        AudioFormat audioFormat = new AudioFormat(Sample.rate, 16, 1, true, false);
         _buffer = new byte[Sample.rate];
+        _soundEvent = new SoundEvent(i);
+        AudioFormat audioFormat = new AudioFormat(Sample.rate, Sample.quality , 1, true, false);
 
         Thread initThread = new Thread(() -> {
             try {
-                //create dataline
+
+                //create
                 _dataLine = AudioSystem.getSourceDataLine(audioFormat);
                 _dataLine.open(audioFormat, Sample.rate);
                 _dataLine.start();
 
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-            }
-
-            try {
+                //loop
                 while (isPlaying) {
                     next();
-                    Thread.sleep(100);
+                    Thread.sleep(1);
                 }
-                end();
-                System.out.println("terminate");
+
+                // finish
+                _dataLine.drain();
+                _dataLine.close();
+
+
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -96,10 +100,9 @@ public class SoundProcessor {
     }
 
     public void next(){
-        if (_dataLine == null) return;
-        if (!se.finished) {
+        if (!_soundEvent.finished) {
             for (int i = 0; i < Sample.rate; i++) {
-                _buffer[i] = (byte) (se.next() / 2);
+                _buffer[i] = (byte) _soundEvent.next();
             }
              _dataLine.write(_buffer, 0, Sample.rate);
         }else{
@@ -109,11 +112,6 @@ public class SoundProcessor {
 
     public void stop() {
         isPlaying = false;
-    }
-
-    public void end() {
-        _dataLine.drain();
-        _dataLine.close();
     }
 
 }
