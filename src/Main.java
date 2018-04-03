@@ -28,20 +28,18 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        final SoundProcessor sound = new SoundProcessor();
-
         Note notes = new Note();
 
         can.setOnMousePressed((MouseEvent event) -> {
             notes.onClick(event);
             can.updateState(notes.notes);
-            sound.play(notes.active);
+            int note = (int) (event.getSceneX() / 30) + 1;
+            new SoundProcessor(note);
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
             notes.onRelease(event);
             can.updateState(notes.notes);
-            sound.stop();
         });
 
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
@@ -51,27 +49,14 @@ public class Main extends Application {
         scene.setOnKeyPressed((KeyEvent event) -> {
             notes.keyPress(event);
             can.updateState(notes.notes);
-            sound.play(notes.active);
+            int n = notes.noteFromKeyEvent(event);
+            new SoundProcessor(n);
         });
 
         scene.setOnKeyReleased((KeyEvent event) -> {
             notes.keyRelease(event);
             can.updateState(notes.notes);
-            sound.stop();
         });
-
-        Thread soundRunner = new Thread(() -> {
-            try {
-                while (_isLive) {
-                    sound.next();
-                    Thread.sleep(2);
-                }
-                sound.terminate();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        soundRunner.start();
     }
 }
 

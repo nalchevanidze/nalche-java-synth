@@ -44,7 +44,7 @@ public class Note {
         active = notes.stream().mapToInt(i -> (int) i).toArray();
     }
 
-    private int noteFromKeyEvent(KeyEvent event) {
+    public int noteFromKeyEvent(KeyEvent event) {
         char key = event.getCode().getName().toLowerCase().charAt(0);
 
         switch (key) {
