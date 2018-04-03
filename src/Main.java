@@ -34,8 +34,7 @@ public class Main extends Application {
             notes.onClick(event);
             can.updateState(notes.notes);
             int note = (int) (event.getSceneX() / 30) + 1;
-            SoundProcessor s = new SoundProcessor();
-            s.singlePlay(note);
+            new SoundProcessor(note);
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
@@ -51,29 +50,13 @@ public class Main extends Application {
             notes.keyPress(event);
             can.updateState(notes.notes);
             int n = notes.noteFromKeyEvent(event);
-            SoundProcessor s = new SoundProcessor();
-            s.singlePlay(n);
+            new SoundProcessor(n);
         });
 
         scene.setOnKeyReleased((KeyEvent event) -> {
             notes.keyRelease(event);
             can.updateState(notes.notes);
         });
-
-        /*
-        Thread soundRunner = new Thread(() -> {
-            try {
-                while (_isLive) {
-                    sound.next();
-                    Thread.sleep(2);
-                }
-                sound.terminate();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        soundRunner.start();
-        */
     }
 }
 
