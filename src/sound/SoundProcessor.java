@@ -29,17 +29,23 @@ class VolumeEnvelope {
 class SoundEvent {
     double state = 0;
     double stepSize = 1;
-    VolumeEnvelope volume  = new VolumeEnvelope(8);
+    VolumeEnvelope volume  = new VolumeEnvelope(5);
+    boolean finished = false;
 
     public float next(){
 
         state = (state + stepSize) % 1;
+        float v = volume.next();
+        if(v == 0){
+            finished = true;
+            return 0;
+        }
 
-        return (float)(Wave.saw(state) * 125f * volume.next());
+        return (float)(Wave.saw(state) * 125f * v);
     }
 
-    SoundEvent(double step_size){
-        stepSize = step_size;
+    SoundEvent(double frequency){
+        stepSize = frequency / Sample.rate;
     }
 }
 
@@ -48,20 +54,22 @@ public class SoundProcessor {
 
     private SourceDataLine _dataLine;
 
-    private boolean isPlaying = false;
+    public boolean isPlaying = true;
     private byte[] _buffer;
     private int _processingIndex = 0;
     private SoundEvent[] _events = new SoundEvent[1];
     private int [] _indexes = new int[0];
+    private SoundEvent se;
 
     public SoundProcessor() {
-        AudioFormat audioFormat = new AudioFormat(Sample.rate, 32, 1, true, false);
+        AudioFormat audioFormat = new AudioFormat(Sample.rate, 16, 1, true, false);
         _buffer = new byte[Sample.rate];
         Thread initThread = new Thread(() -> {
             try {
                 _dataLine = AudioSystem.getSourceDataLine(audioFormat);
                 _dataLine.open(audioFormat, Sample.rate);
                 _dataLine.start();
+
             } catch (LineUnavailableException e) {
                 e.printStackTrace();
             }
@@ -101,6 +109,41 @@ public class SoundProcessor {
         }
     }
 
+    public void singleNext(){
+
+        if (_dataLine == null) return;
+
+        if (!se.finished) {
+
+            for (int i = 0; i < Sample.rate; i++) {
+                _buffer[i] = (byte) (se.next() / 2);
+            }
+
+             _dataLine.write(_buffer, 0, Sample.rate);
+
+        }else{
+            isPlaying = false;
+        }
+    }
+
+    public void singlePlay(int i){
+        se = new SoundEvent( noteToFrequency(i + 12)  );
+        Thread sr = new Thread(() -> {
+            try {
+                while (isPlaying) {
+                    singleNext();
+                    Thread.sleep(5);
+                }
+                terminate();
+                System.out.println("terminate");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        sr.start();
+    }
+
+
     public void play(int[] indexes) {
 
         if(_indexes == indexes) return;
@@ -121,10 +164,10 @@ public class SoundProcessor {
         isPlaying = false;
     }
 
+
     public void terminate() {
         _dataLine.drain();
         _dataLine.close();
-
     }
 
 }
