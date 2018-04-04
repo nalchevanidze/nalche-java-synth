@@ -1,20 +1,17 @@
 package panel;
-
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class Note {
 
     public Set<Integer> notes = new HashSet<>();
-    public int[] active = new int[0];
 
-    public void push(int note){
+
+    private void push(int note){
         if(!notes.contains(note)){
             notes.add(note);
-            updateActiveNotes();
         }
     }
 
@@ -26,7 +23,6 @@ public class Note {
     public void onRelease(MouseEvent event) {
         int note = (int) (event.getSceneX() / 30) + 1;
         notes.remove(note);
-        updateActiveNotes();
     }
 
     public void keyPress(KeyEvent event) {
@@ -37,11 +33,6 @@ public class Note {
     public void keyRelease(KeyEvent event) {
         int note = noteFromKeyEvent(event);
         notes.remove(note);
-        updateActiveNotes();
-    }
-
-    private void updateActiveNotes() {
-        active = notes.stream().mapToInt(i -> (int) i).toArray();
     }
 
     public int noteFromKeyEvent(KeyEvent event) {

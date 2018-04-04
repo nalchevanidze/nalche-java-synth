@@ -1,14 +1,12 @@
 package panel;
-
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class Keyboard extends Canvas {
-    GraphicsContext _gc;
+    private GraphicsContext _gc;
     private int _height;
     private Set _active = new HashSet<Integer>();
 

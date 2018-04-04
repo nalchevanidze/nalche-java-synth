@@ -8,21 +8,24 @@ import javax.sound.sampled.SourceDataLine;
 class Sample {
     public static int rate = 8 * 1024;
     public static int quality = 32;
+    public static AudioFormat audioFormat = new AudioFormat(rate, quality , 1, true, false);
 }
 
-class VolumeEnvelope {
-    float state = 1;
-    float stepSize = 0;
-    VolumeEnvelope(float time ){
+class Envelope {
+    private float state = 1;
+    private float stepSize = 0;
+
+    Envelope(float time ){
         stepSize = 1.0f / (Sample.rate * time);
     }
+
     public float next(){
         if(state == 0) return 0;
         state -= stepSize;
         if(state < 0){
             state = 0;
         }
-        return (float) state;
+        return state;
     }
 }
 
@@ -30,7 +33,7 @@ class VolumeEnvelope {
 class SoundEvent {
     double state = 0;
     double stepSize = 1;
-    VolumeEnvelope volume  = new VolumeEnvelope(1.4f);
+    Envelope volume  = new Envelope(1.4f);
     boolean finished = false;
 
     SoundEvent(int note){
@@ -60,26 +63,21 @@ class SoundEvent {
 
 public class SoundProcessor {
 
-    public boolean isPlaying = true;
     private SourceDataLine _dataLine;
-    private byte[] _buffer;
     private SoundEvent _soundEvent;
 
     public SoundProcessor(int i) {
-        _buffer = new byte[Sample.rate];
         _soundEvent = new SoundEvent(i);
-        AudioFormat audioFormat = new AudioFormat(Sample.rate, Sample.quality , 1, true, false);
-
         Thread initThread = new Thread(() -> {
             try {
 
                 //create
-                _dataLine = AudioSystem.getSourceDataLine(audioFormat);
-                _dataLine.open(audioFormat, Sample.rate);
+                _dataLine = AudioSystem.getSourceDataLine(Sample.audioFormat);
+                _dataLine.open(Sample.audioFormat, Sample.rate);
                 _dataLine.start();
 
                 //loop
-                while (isPlaying) {
+                while (!_soundEvent.finished) {
                     next();
                     Thread.sleep(1);
                 }
@@ -99,19 +97,13 @@ public class SoundProcessor {
         initThread.start();
     }
 
-    public void next(){
+    private void next(){
         if (!_soundEvent.finished) {
+            byte[] buffer = new byte[Sample.rate];
             for (int i = 0; i < Sample.rate; i++) {
-                _buffer[i] = (byte) _soundEvent.next();
+                buffer[i] = (byte) _soundEvent.next();
             }
-             _dataLine.write(_buffer, 0, Sample.rate);
-        }else{
-            isPlaying = false;
+             _dataLine.write(buffer, 0, Sample.rate);
         }
     }
-
-    public void stop() {
-        isPlaying = false;
-    }
-
 }
