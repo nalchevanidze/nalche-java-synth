@@ -54,7 +54,7 @@ class SoundEvent {
             return 0;
         }
 
-        return (float)(Wave.sine(state) * v * 60f );
+        return (float)(Wave.square(state) * v * 60f );
     }
 
 

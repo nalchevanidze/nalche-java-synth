@@ -7,11 +7,11 @@ public class Wave {
     }
 
     public static double saw(double waveIndex) {
-        return 0.5 - waveIndex;
+        return  waveIndex*2 - 1;
     }
 
     public static double square(double waveIndex) {
-        return Math.round(waveIndex);
+        return waveIndex > 0.5 ?  -1 : 1;
     }
 
     public static double mixed(double i) {
