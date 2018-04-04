@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Keyboard extends Canvas {
+final public class Keyboard extends Canvas {
     private GraphicsContext _gc;
     private int _height;
     private Set _active = new HashSet<Integer>();

@@ -4,7 +4,7 @@ import javafx.scene.input.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Note {
+final public class Note {
 
     public Set<Integer> notes = new HashSet<>();
 

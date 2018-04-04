@@ -1,6 +1,6 @@
 package sound;
 
-public class Wave {
+final public class Wave {
 
     public static double sine(double waveIndex) {
         return Math.sin(waveIndex * 2 * Math.PI);

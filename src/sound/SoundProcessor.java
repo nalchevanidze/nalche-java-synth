@@ -1,17 +1,18 @@
 package sound;
 
+import com.sun.istack.internal.NotNull;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-class Sample {
+final class Sample {
     public static int rate = 8 * 1024;
     public static int quality = 32;
     public static AudioFormat audioFormat = new AudioFormat(rate, quality , 1, true, false);
 }
 
-class Envelope {
+final class Envelope {
     private float state = 1;
     private float stepSize = 0;
 
@@ -30,11 +31,11 @@ class Envelope {
 }
 
 
-class SoundEvent {
-    double state = 0;
-    double stepSize = 1;
-    Envelope volume  = new Envelope(1.4f);
-    boolean finished = false;
+final class SoundEvent {
+    private double state = 0;
+    private double stepSize = 1;
+    public boolean finished = false;
+    private @NotNull  Envelope volume  = new Envelope(1.4f);
 
     SoundEvent(int note){
         stepSize = toFrequency(note) / Sample.rate;
@@ -61,10 +62,10 @@ class SoundEvent {
 }
 
 
-public class SoundProcessor {
+final public class SoundProcessor {
 
-    private SourceDataLine _dataLine;
-    private SoundEvent _soundEvent;
+    private @NotNull SourceDataLine _dataLine;
+    private @NotNull SoundEvent _soundEvent;
 
     public SoundProcessor(int i) {
         _soundEvent = new SoundEvent(i);
@@ -87,9 +88,7 @@ public class SoundProcessor {
                 _dataLine.close();
 
 
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (LineUnavailableException | InterruptedException e) {
                 e.printStackTrace();
             }
 
