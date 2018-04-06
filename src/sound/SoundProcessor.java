@@ -13,14 +13,14 @@ final class Sample {
 }
 
 final class Envelope {
-    private float state = 1;
-    private float stepSize = 0;
+    private double state = 1;
+    private double stepSize = 0;
 
     Envelope(float time ){
         stepSize = 1.0f / (Sample.rate * time);
     }
 
-    public float next(){
+    public double next(){
         if(state == 0) return 0;
         state -= stepSize;
         if(state < 0){
@@ -34,8 +34,13 @@ final class Envelope {
 final class SoundEvent {
     private double state = 0;
     private double stepSize = 1;
+    private boolean isPressed = true;
     public boolean finished = false;
     private @NotNull  Envelope volume  = new Envelope(1.4f);
+
+    public void stop(){
+        isPressed = false;
+    }
 
     SoundEvent(int note){
         stepSize = toFrequency(note) / Sample.rate;
@@ -46,16 +51,18 @@ final class SoundEvent {
         return (float) Math.pow(2, power) * 440;
     }
 
-    public float next(){
+    public byte next(){
 
         state = (state + stepSize) % 1;
-        float v = volume.next();
+
+        double v = isPressed? 1 : volume.next();
+
         if(v == 0){
             finished = true;
             return 0;
         }
 
-        return (float)(Wave.square(state) * v * 60f );
+        return (byte)(Wave.square(state) * v * 30f );
     }
 
 
@@ -100,9 +107,13 @@ final public class SoundProcessor {
         if (!_soundEvent.finished) {
             byte[] buffer = new byte[Sample.rate];
             for (int i = 0; i < Sample.rate; i++) {
-                buffer[i] = (byte) _soundEvent.next();
+                buffer[i] =  _soundEvent.next();
             }
              _dataLine.write(buffer, 0, Sample.rate);
         }
+    }
+
+    public void stop(){
+        _soundEvent.stop();
     }
 }

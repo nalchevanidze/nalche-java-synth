@@ -30,23 +30,26 @@ final public class Keyboard extends Canvas {
         _gc.setFill(Color.GRAY);
         _gc.fillRect(0, 0, 720, 185);
         for (int i = 0; i <= 24; i++) {
-            int h = _active.contains(i +1) ? (_height - 20) : _height;
+           drawNote(i , _active.contains(i + 1));
+        }
+    }
 
-            int keyId = (i + 1) % 12;
-            switch (keyId) {
-                case 2:
-                case 4:
-                case 7:
-                case 9:
-                case 11:
-                    _gc.setFill(Color.BLACK);
-                    _gc.fillRect(i * 30, 0, 30, h);
-                    break;
-                default:
-                    _gc.setFill(Color.WHITE);
-                    _gc.fillRect(i * 30 + 1, 0, 30 - 1, h);
-                    break;
-            }
+    void drawNote(int i, boolean isActive) {
+        int h = isActive ? (_height - 20) : _height;
+        int keyId = (i + 1) % 12;
+        switch (keyId) {
+            case 2:
+            case 4:
+            case 7:
+            case 9:
+            case 11:
+                _gc.setFill(Color.BLACK);
+                _gc.fillRect(i * 30, 0, 30, h);
+                break;
+            default:
+                _gc.setFill(Color.WHITE);
+                _gc.fillRect(i * 30 + 1, 0, 30 - 1, h);
+                break;
         }
     }
 }
