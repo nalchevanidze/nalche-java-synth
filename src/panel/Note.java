@@ -6,36 +6,29 @@ import java.util.Set;
 
 final public class Note {
 
-    public Set<Integer> notes = new HashSet<>();
-
-
-    private void push(int note){
-        if(!notes.contains(note)){
-            notes.add(note);
-        }
-    }
+    public Set<Short> notes = new HashSet<>();
 
     public void onClick(MouseEvent event) {
-        int note = (int) (event.getSceneX() / 30) + 1;
-        push(note);
+        notes.add(fromMouse(event));
     }
 
     public void onRelease(MouseEvent event) {
-        int note = (int) (event.getSceneX() / 30) + 1;
-        notes.remove(note);
+        notes.remove(fromMouse(event));
     }
 
     public void keyPress(KeyEvent event) {
-        int note = noteFromKeyEvent(event);
-        push(note);
+        notes.add(noteFromKeyEvent(event));
     }
 
     public void keyRelease(KeyEvent event) {
-        int note = noteFromKeyEvent(event);
-        notes.remove(note);
+        notes.remove(noteFromKeyEvent(event));
     }
 
-    public int noteFromKeyEvent(KeyEvent event) {
+    public short fromMouse (MouseEvent event){
+        return (short)(event.getSceneX() / 30);
+    }
+
+    public short noteFromKeyEvent(KeyEvent event) {
         char key = event.getCode().getName().toLowerCase().charAt(0);
 
         switch (key) {

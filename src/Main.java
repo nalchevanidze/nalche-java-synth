@@ -12,7 +12,7 @@ import sound.SoundProcessor;
 class SoundManager {
     private SoundProcessor[] activeSoundProcessors = new SoundProcessor[49];
 
-    public void add(int note) {
+    public void add(short note) {
 
         if(note < 0 || note > 49) return;
 
@@ -22,7 +22,7 @@ class SoundManager {
         activeSoundProcessors[note] = new SoundProcessor(note);
     }
 
-    public void remove (int note){
+    public void remove (short note){
 
         if(note < 0 || note > 49) return;
 
@@ -46,7 +46,6 @@ public class Main extends Application {
         primaryStage.setTitle("Synthesizer");
         StackPane layout = new StackPane();
         final Keyboard can = new Keyboard();
-        can.paint();
         layout.getChildren().add(can);
 
         Scene scene = new Scene(layout, 720, 190);
@@ -57,34 +56,34 @@ public class Main extends Application {
         SoundManager sounds = new SoundManager();
 
         can.setOnMousePressed((MouseEvent event) -> {
-            int note = (int) (event.getSceneX() / 30) + 1;
+            short note = notes.fromMouse(event);
             if (!notes.notes.contains(note)) {
                 notes.onClick(event);
-                can.updateState(notes.notes);
+                can.renderNote(note, true);
                 sounds.add(note);
             }
         });
 
         scene.setOnKeyPressed((KeyEvent event) -> {
-            int note = notes.noteFromKeyEvent(event);
+            short note = notes.noteFromKeyEvent(event);
             if (!notes.notes.contains(note)) {
                 notes.keyPress(event);
-                can.updateState(notes.notes);
+                can.renderNote(note, true);
                 sounds.add(note);
             }
         });
 
         can.setOnMouseReleased((MouseEvent event) -> {
-            int note = (int) (event.getSceneX() / 30) + 1;
+            short note = notes.fromMouse(event);
             notes.onRelease(event);
-            can.updateState(notes.notes);
+            can.renderNote(note, false);
             sounds.remove(note);
         });
 
         scene.setOnKeyReleased((KeyEvent event) -> {
-            int note = notes.noteFromKeyEvent(event);
+            short note = notes.noteFromKeyEvent(event);
             notes.keyRelease(event);
-            can.updateState(notes.notes);
+            can.renderNote(note, false);
             sounds.remove(note);
         });
 

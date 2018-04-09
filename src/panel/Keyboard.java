@@ -7,36 +7,24 @@ import java.util.Set;
 
 final public class Keyboard extends Canvas {
     private GraphicsContext _gc;
-    private int _height;
-    private Set _active = new HashSet<Integer>();
-
+    private short _height = 180;
 
     public Keyboard() {
         super();
-        _height = 180;
         setHeight(185);
         setWidth(720);
         _gc = getGraphicsContext2D();
-
-    }
-
-    public void updateState(Set notes) {
-        _active = notes;
-        paint();
-    }
-
-
-    public void paint() {
-        _gc.setFill(Color.GRAY);
-        _gc.fillRect(0, 0, 720, 185);
-        for (int i = 0; i <= 24; i++) {
-           drawNote(i , _active.contains(i + 1));
+        for (short i = 0; i <= 24; i++) {
+            renderNote(i , false);
         }
+
     }
 
-    void drawNote(int i, boolean isActive) {
-        int h = isActive ? (_height - 20) : _height;
-        int keyId = (i + 1) % 12;
+    public void renderNote(short i, boolean isActive) {
+        _gc.setFill(Color.GRAY);
+        _gc.fillRect(i * 30, 0, 30 , 185);
+        short h = (short) (isActive ? (_height - 20) : _height);
+        short keyId = (short)( (i + 1) % 12);
         switch (keyId) {
             case 2:
             case 4:
