@@ -4,12 +4,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import panel.Keyboard;
 import panel.Note;
 import sound.SoundProcessor;
 
 class SoundManager {
+	
     private SoundProcessor[] activeSoundProcessors = new SoundProcessor[49];
 
     public void add(short note) {
@@ -35,7 +35,6 @@ class SoundManager {
 
 
 public class Main extends Application {
-    private boolean _isLive = true;
 
     public static void main(String[] args) {
         launch(args);
@@ -87,9 +86,6 @@ public class Main extends Application {
             sounds.remove(note);
         });
 
-        primaryStage.setOnCloseRequest((WindowEvent event) -> {
-            _isLive = false;
-        });
     }
 }
 

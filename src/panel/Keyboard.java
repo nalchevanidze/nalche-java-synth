@@ -2,8 +2,6 @@ package panel;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import java.util.HashSet;
-import java.util.Set;
 
 final public class Keyboard extends Canvas {
     private GraphicsContext _gc;
