@@ -2,7 +2,7 @@ package sound
 
 import com.sun.istack.internal.NotNull
 import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.AudioSystem.getSourceDataLine;
 import javax.sound.sampled.LineUnavailableException
 import javax.sound.sampled.SourceDataLine
 
@@ -53,17 +53,19 @@ internal class SoundEvent(note: Int) {
 
     operator fun next(): Byte {
         state = (state + stepSize) % 360
-        var v = 100.0;
-        if(!isPressed){
-            v = volume.next();
+
+        var volumeValue = 100.0;
+
+        if (!isPressed) {
+            volumeValue = this.volume.next();
         }
 
-        if (v < 1) {
+        if (volumeValue < 1) {
             finished = true
             return 0
         }
 
-        return (sine(state) * v).toByte()
+        return (sine(state) * volumeValue).toByte()
     }
 
 
@@ -72,7 +74,7 @@ internal class SoundEvent(note: Int) {
 
 class SoundProcessor(i: Int) {
 
-    private var _dataLine: SourceDataLine? = null
+    private var _dataLine: SourceDataLine =  getSourceDataLine(Sample.audioFormat)
     private val _soundEvent: SoundEvent
 
     init {
@@ -81,9 +83,8 @@ class SoundProcessor(i: Int) {
             try {
 
                 //create
-                _dataLine = AudioSystem.getSourceDataLine(Sample.audioFormat)
-                _dataLine!!.open(Sample.audioFormat, Sample.rate)
-                _dataLine!!.start()
+                _dataLine.open(Sample.audioFormat, Sample.rate)
+                _dataLine.start()
 
                 //loop
                 while (!_soundEvent.finished) {
@@ -92,8 +93,8 @@ class SoundProcessor(i: Int) {
                 }
 
                 // finish
-                _dataLine!!.drain()
-                _dataLine!!.close()
+                _dataLine.drain()
+                _dataLine.close()
 
 
             } catch (e: LineUnavailableException) {
@@ -113,7 +114,7 @@ class SoundProcessor(i: Int) {
             for (i in 0 until Sample.rate) {
                 buffer[i] = _soundEvent.next()
             }
-            _dataLine!!.write(buffer, 0, Sample.rate)
+            _dataLine.write(buffer, 0, Sample.rate)
         }
     }
 
