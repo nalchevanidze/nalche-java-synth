@@ -1,16 +1,14 @@
 package sound
-
-import com.sun.istack.internal.NotNull
 import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioSystem.getSourceDataLine;
+import javax.sound.sampled.AudioSystem.getSourceDataLine
 import javax.sound.sampled.LineUnavailableException
 import javax.sound.sampled.SourceDataLine
 
 
 internal object Sample {
-    var rate = 1280000
-    var quality = 16
-    var audioFormat = AudioFormat(rate.toFloat(), quality, 1, true, false)
+    const val rate = 1280000
+    private const val quality = 16
+    val audioFormat = AudioFormat(rate.toFloat(), quality, 1, true, false)
 }
 
 internal class Envelope(time: Double) {
@@ -35,7 +33,6 @@ internal class SoundEvent(note: Int) {
     private var stepSize = 1.0
     private var isPressed = true
     var finished = false
-    @NotNull
     private val volume = Envelope(1.4)
 
     fun stop() {
@@ -54,10 +51,10 @@ internal class SoundEvent(note: Int) {
     operator fun next(): Byte {
         state = (state + stepSize) % 360
 
-        var volumeValue = 100.0;
+        var volumeValue = 100.0
 
         if (!isPressed) {
-            volumeValue = this.volume.next();
+            volumeValue = this.volume.next()
         }
 
         if (volumeValue < 1) {
@@ -74,11 +71,10 @@ internal class SoundEvent(note: Int) {
 
 class SoundProcessor(i: Int) {
 
-    private var _dataLine: SourceDataLine =  getSourceDataLine(Sample.audioFormat)
-    private val _soundEvent: SoundEvent
+    private var _dataLine: SourceDataLine = getSourceDataLine(Sample.audioFormat)
+    private val _soundEvent: SoundEvent = SoundEvent(i)
 
     init {
-        _soundEvent = SoundEvent(i)
         val initThread = Thread {
             try {
 
@@ -109,13 +105,13 @@ class SoundProcessor(i: Int) {
     }
 
     private operator fun next() {
-        if (!_soundEvent.finished) {
-            val buffer = ByteArray(Sample.rate)
-            for (i in 0 until Sample.rate) {
-                buffer[i] = _soundEvent.next()
-            }
-            _dataLine.write(buffer, 0, Sample.rate)
+
+        val buffer = ByteArray(Sample.rate)
+        for (i in 0 until Sample.rate) {
+            buffer[i] = _soundEvent.next()
         }
+        _dataLine.write(buffer, 0, Sample.rate)
+
     }
 
     fun stop() {
