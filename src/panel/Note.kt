@@ -24,9 +24,7 @@ class Note {
         notes.remove(noteFromKeyEvent(event))
     }
 
-    fun fromMouse(event: MouseEvent): Int {
-        return (event.sceneX / 30).toInt()
-    }
+    fun fromMouse(event: MouseEvent) = (event.sceneX / 30).toInt()
 
     fun noteFromKeyEvent(event: KeyEvent): Int {
         val key = event.code.getName().toLowerCase()[0]

@@ -8,9 +8,6 @@ import panel.Keyboard
 import panel.Note
 import sound.SoundManager
 
-
-
-
 class Main : Application() {
 
     @Throws(Exception::class)

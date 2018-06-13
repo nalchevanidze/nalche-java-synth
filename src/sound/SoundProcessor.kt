@@ -1,15 +1,7 @@
 package sound
-import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem.getSourceDataLine
 import javax.sound.sampled.LineUnavailableException
 import javax.sound.sampled.SourceDataLine
-
-
-internal object Sample {
-    const val rate = 1280000
-    private const val quality = 16
-    val audioFormat = AudioFormat(rate.toFloat(), quality, 1, true, false)
-}
 
 internal class Envelope(time: Double) {
 
@@ -26,7 +18,6 @@ internal class Envelope(time: Double) {
         return if (state <= 0) 0.0 else state / 10
     }
 }
-
 
 internal class SoundEvent(note: Int) {
     private var state = 0.0
