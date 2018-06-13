@@ -56,7 +56,7 @@ class Main : Application() {
             if (!notes.notes.contains(note)) {
                 notes.onClick(event)
                 can.renderNote(note, true)
-                sounds.add(note.toInt())
+                sounds.add(note)
             }
         }
 
@@ -65,7 +65,7 @@ class Main : Application() {
             if (!notes.notes.contains(note)) {
                 notes.keyPress(event)
                 can.renderNote(note, true)
-                sounds.add(note.toInt())
+                sounds.add(note)
             }
         }
 
