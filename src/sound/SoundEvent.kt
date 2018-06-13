@@ -28,13 +28,10 @@ internal class SoundEvent(note: Int) {
     }
 
     init {
-        stepSize = (600 * toFrequency(note) / Sample.rate).toDouble()
+        stepSize = 360.0 * toFrequency(note) / Sample.rate
     }
 
-    private fun toFrequency(index: Int): Float {
-        val power = (index.toFloat() - 49) / 12
-        return Math.pow(2.0, power.toDouble()).toFloat() * 440
-    }
+    private fun toFrequency(index: Int) = Math.pow(2.0, (index - 49.0) / 12) * 440
 
     operator fun next(): Byte {
         state = (state + stepSize) % 360
@@ -50,7 +47,7 @@ internal class SoundEvent(note: Int) {
             return 0
         }
 
-        return (saw(state) * volumeValue).toByte()
+        return (sine(state) * volumeValue).toByte()
     }
 
 
