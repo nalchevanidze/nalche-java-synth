@@ -51,36 +51,40 @@ class Main : Application() {
         val notes = Note()
         val sounds = SoundManager()
 
+        fun addNote (note: Int ){
+            can.renderNote(note, true)
+            sounds.add(note)
+        }
+
+        fun removeNote (note: Int){
+            can.renderNote(note, false)
+            sounds.remove(note)
+        }
+
         can.setOnMousePressed { event: MouseEvent ->
             val note = notes.fromMouse(event)
             if (!notes.notes.contains(note)) {
                 notes.onClick(event)
-                can.renderNote(note, true)
-                sounds.add(note)
+                addNote(note)
             }
+        }
+        can.setOnMouseReleased { event: MouseEvent ->
+            val note = notes.fromMouse(event)
+            notes.onRelease(event)
+            removeNote(note)
         }
 
         scene.setOnKeyPressed { event: KeyEvent ->
             val note = notes.noteFromKeyEvent(event)
             if (!notes.notes.contains(note)) {
                 notes.keyPress(event)
-                can.renderNote(note, true)
-                sounds.add(note)
+                addNote(note)
             }
         }
-
-        can.setOnMouseReleased { event: MouseEvent ->
-            val note = notes.fromMouse(event)
-            notes.onRelease(event)
-            can.renderNote(note, false)
-            sounds.remove(note.toInt())
-        }
-
         scene.setOnKeyReleased { event: KeyEvent ->
             val note = notes.noteFromKeyEvent(event)
             notes.keyRelease(event)
-            can.renderNote(note, false)
-            sounds.remove(note.toInt())
+            removeNote(note)
         }
 
     }
