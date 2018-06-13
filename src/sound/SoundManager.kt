@@ -2,25 +2,25 @@ package sound
 
 class SoundManager {
 
-    private val activeSoundProcessors = arrayOfNulls<SoundProcessor>(size = 49)
+    private val soundProcesses = arrayOfNulls<SoundProcessor>(size = 49)
 
     fun add(note: Int) {
 
         if (note < 0 || note > 49) return
 
-        if (activeSoundProcessors[note] != null) {
-            activeSoundProcessors[note]!!.stop()
+        if (soundProcesses[note] != null) {
+            soundProcesses[note]!!.stop()
         }
-        activeSoundProcessors[note] = SoundProcessor(note)
+        soundProcesses[note] = SoundProcessor(note)
     }
 
     fun remove(note: Int) {
 
         if (note < 0 || note > 49) return
 
-        if (activeSoundProcessors[note] != null) {
-            activeSoundProcessors[note]!!.stop()
-            activeSoundProcessors[note] = null
+        if (soundProcesses[note] != null) {
+            soundProcesses[note]!!.stop()
+            soundProcesses[note] = null
         }
     }
 }

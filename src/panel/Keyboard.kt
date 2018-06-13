@@ -19,22 +19,26 @@ class Keyboard : Canvas() {
     }
 
     fun renderNote(i: Int, isActive: Boolean) {
+
         _gc.fill = Color.GRAY
-        _gc.fillRect((i * 30).toDouble(), 0.0, 30.0, 185.0)
-        var h = _height;
+
+        _gc.fillRect(i * 30.0, 0.0, 30.0, 185.0)
+
+        var height = _height.toDouble();
+
         if(isActive){
-            h -= 20
+            height -= 20
         }
         val keyId = ((i + 1) % 12)
 
         when (keyId) {
             2, 4, 7, 9, 11 -> {
                 _gc.fill = Color.BLACK
-                _gc.fillRect((i * 30).toDouble(), 0.0, 30.0, h.toDouble())
+                _gc.fillRect(i * 30.0, 2.0, 30.0, height)
             }
             else -> {
                 _gc.fill = Color.WHITE
-                _gc.fillRect((i * 30 + 1).toDouble(), 0.0, (30 - 1).toDouble(), h.toDouble())
+                _gc.fillRect(i * 30.0 + 1, 0.0, 30.0 - 1, height)
             }
         }
     }
