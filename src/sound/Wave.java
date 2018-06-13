@@ -3,15 +3,16 @@ package sound;
 final public class Wave {
 
     public static double sine(double waveIndex) {
-        return Math.sin(waveIndex * 2 * Math.PI);
+        double i = Math.toRadians(waveIndex);
+        return Math.sin(i);
     }
 
     public static double saw(double waveIndex) {
-        return  waveIndex*2 - 1;
+        return  waveIndex/180 - 1;
     }
 
     public static double square(double waveIndex) {
-        return waveIndex > 0.5 ?  -1 : 1;
+        return waveIndex >  180 ?  -1 : 1;
     }
 
     public static double mixed(double i) {

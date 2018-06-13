@@ -7,26 +7,25 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 final class Sample {
-    public static int rate = 8 * 1024;
-    public static int quality = 32;
+    public static int rate =  1280000;
+    public static int quality = 16;
     public static AudioFormat audioFormat = new AudioFormat(rate, quality , 1, true, false);
 }
 
 final class Envelope {
-    private double state = 1;
+
+    private double state = 1000;
     private double stepSize = 0;
 
-    Envelope(float time ){
-        stepSize = 1.0f / (Sample.rate * time);
+    Envelope(double time ){
+        stepSize = state /  (time * Sample.rate) ;
     }
 
     public double next(){
-        if(state == 0) return 0;
+        if(state <= 0) return 0;
         state -= stepSize;
-        if(state < 0){
-            state = 0;
-        }
-        return state;
+        if(state <= 0) return 0;
+        return state/10;
     }
 }
 
@@ -36,14 +35,14 @@ final class SoundEvent {
     private double stepSize = 1;
     private boolean isPressed = true;
     public boolean finished = false;
-    private @NotNull  Envelope volume  = new Envelope(1.4f);
+    private @NotNull  Envelope volume  = new Envelope(1.4);
 
     public void stop(){
         isPressed = false;
     }
 
     SoundEvent(int note){
-        stepSize = toFrequency(note) / Sample.rate;
+        stepSize = 600 * toFrequency(note) / Sample.rate;
     }
 
     private float toFrequency(int index) {
@@ -52,17 +51,15 @@ final class SoundEvent {
     }
 
     public byte next(){
+        state = (state + stepSize) % 360;
+        double v = isPressed? 100 : volume.next();
 
-        state = (state + stepSize) % 1;
-
-        double v = isPressed? 1 : volume.next();
-
-        if(v == 0){
+        if(v < 1 ){
             finished = true;
             return 0;
         }
 
-        return (byte)(Wave.square(state) * v * 30f );
+        return (byte)(Wave.sine(state)  * v  );
     }
 
 
